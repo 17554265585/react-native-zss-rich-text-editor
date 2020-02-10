@@ -1255,26 +1255,21 @@
 			// Needs addClass method
 
 			zss_editor.insertLink = function(url, title) {
-
 				zss_editor.restorerange();
-				var sel = document.getSelection();
+				var sel = window.getSelection();
 				sel.deleteFromDocument();
-				document.execCommand('insertHTML',false,'<a href="'+encodeHtmlEntities(url)+'">'+encodeHtmlEntities(title)+'</a>');
-
+				zss_editor.insertHTML('<a href="'+ url +'">'+ title +'</a>');
 				zss_editor.enabledEditingItems();
 			}
 
 			zss_editor.updateLink = function(url, title) {
-
 				zss_editor.restorerange();
-
 				if (zss_editor.currentEditingLink) {
 					var c = zss_editor.currentEditingLink;
 					c.attr('href', url);
 					c.text(title);
 				}
 				zss_editor.enabledEditingItems();
-
 			}//end
 
 			zss_editor.updateImage = function(url, alt) {

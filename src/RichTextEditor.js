@@ -1,16 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-// import WebViewBridge from 'react-native-webview-bridge-updated';
 import WebView from 'react-native-webview';
 import {MessageConverter} from './WebviewMessageHandler';
 import {actions, messages} from './const';
 import {Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, PixelRatio, Keyboard, Dimensions} from 'react-native';
-
-// const injectScript = `
-//   (function () {
-//     ${InjectedMessageHandler}
-//   }());
-// `;
 
 const PlatformIOS = Platform.OS === 'ios';
 
@@ -43,7 +36,7 @@ export default class RichTextEditor extends Component {
     this.state = {
       selectionChangeListeners: [],
       onChange: [],
-      showLinkDialog: false,
+      isShowLinkDialog: false,
       linkInitialUrl: '',
       linkTitle: '',
       linkUrl: '',
@@ -160,7 +153,6 @@ export default class RichTextEditor extends Component {
 
           break;
         case messages.LINK_TOUCHED:
-          this.prepareInsert();
           const {title, url} = message.data;
           this.showLinkDialog(title, url);
           break;
@@ -202,16 +194,17 @@ export default class RichTextEditor extends Component {
   }
 
   _renderLinkModal() {
+    const {linkOption} = this.props;
     return (
         <Modal
             animationType={"fade"}
             transparent
-            visible={this.state.showLinkDialog}
-            onRequestClose={() => this.setState({showLinkDialog: false})}
+            visible={this.state.isShowLinkDialog}
+            onRequestClose={() => this.setState({isShowLinkDialog: false})}
         >
           <View style={styles.modal}>
             <View style={[styles.innerModal, {marginBottom: PlatformIOS ? this.state.keyboardHeight : 0}]}>
-              <Text style={styles.inputTitle}>Title</Text>
+              <Text style={styles.inputTitle}>{linkOption.titleText}</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                     style={styles.input}
@@ -219,7 +212,7 @@ export default class RichTextEditor extends Component {
                     value={this.state.linkTitle}
                 />
               </View>
-              <Text style={[styles.inputTitle ,{marginTop: 10}]}>URL</Text>
+              <Text style={[styles.inputTitle ,{marginTop: 10}]}>{linkOption.urlText}</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                     style={styles.input}
@@ -240,7 +233,7 @@ export default class RichTextEditor extends Component {
 
   _hideModal() {
     this.setState({
-      showLinkDialog: false,
+      isShowLinkDialog: false,
       linkInitialUrl: '',
       linkTitle: '',
       linkUrl: ''
@@ -251,6 +244,7 @@ export default class RichTextEditor extends Component {
     const insertUpdateDisabled = this.state.linkTitle.trim().length <= 0 || this.state.linkUrl.trim().length <= 0;
     const containerPlatformStyle = PlatformIOS ? {justifyContent: 'space-between'} : {paddingTop: 15};
     const buttonPlatformStyle = PlatformIOS ? {flex: 1, height: 45, justifyContent: 'center'} : {};
+    const { linkOption } = this.props;
     return (
       <View style={[{alignSelf: 'stretch', flexDirection: 'row'}, containerPlatformStyle]}>
         {!PlatformIOS && <View style={{flex: 1}}/>}
@@ -259,7 +253,7 @@ export default class RichTextEditor extends Component {
             style={buttonPlatformStyle}
         >
           <Text style={[styles.button, {paddingRight: 10}]}>
-            {this._upperCaseButtonTextIfNeeded('Cancel')}
+            {linkOption.cancelText}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -275,7 +269,7 @@ export default class RichTextEditor extends Component {
             style={buttonPlatformStyle}
         >
           <Text style={[styles.button, {opacity: insertUpdateDisabled ? 0.5 : 1}]}>
-            {this._upperCaseButtonTextIfNeeded(this._linkIsNew() ? 'Insert' : 'Update')}
+            {this._linkIsNew() ? linkOption.insertText : linkOption.updateText}
           </Text>
         </TouchableOpacity>
       </View>
@@ -284,10 +278,6 @@ export default class RichTextEditor extends Component {
 
   _linkIsNew() {
     return !this.state.linkInitialUrl;
-  }
-
-  _upperCaseButtonTextIfNeeded(buttonText) {
-    return PlatformIOS ? buttonText : buttonText.toUpperCase();
   }
 
   render() {
@@ -301,7 +291,6 @@ export default class RichTextEditor extends Component {
           keyboardDisplayRequiresUserAction={false}
           ref={(r) => {this.webview = r}}
           onMessage={(message) => this.onMessage(message)}
-          // injectedJavaScript={injectScript}
           source={pageSource}
           onLoad={() => this.init()}
         />
@@ -310,23 +299,9 @@ export default class RichTextEditor extends Component {
     );
   }
 
-  escapeJSONString = function(string) {
-    return string
-      .replace(/[\\]/g, '\\\\')
-      .replace(/[\"]/g, '\\\"')
-      .replace(/[\']/g, '\\\'')
-      .replace(/[\/]/g, '\\/')
-      .replace(/[\b]/g, '\\b')
-      .replace(/[\f]/g, '\\f')
-      .replace(/[\n]/g, '\\n')
-      .replace(/[\r]/g, '\\r')
-      .replace(/[\t]/g, '\\t');
-  };
-
   _sendAction(action, data) {
     let jsToBeExecutedOnPage = MessageConverter({ type: action, data });
-
-    console.log(jsToBeExecutedOnPage)
+    console.log(jsToBeExecutedOnPage + ';true;')
     this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
   }
 
@@ -334,11 +309,12 @@ export default class RichTextEditor extends Component {
   //--------------- Public API
 
   showLinkDialog(optionalTitle = '', optionalUrl = '') {
+    this.prepareInsert();
     this.setState({
       linkInitialUrl: optionalUrl,
       linkTitle: optionalTitle,
       linkUrl: optionalUrl,
-      showLinkDialog: true
+      isShowLinkDialog: true
     });
   }
 
