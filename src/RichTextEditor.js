@@ -325,6 +325,8 @@ export default class RichTextEditor extends Component {
 
   _sendAction(action, data) {
     let jsToBeExecutedOnPage = MessageConverter({ type: action, data });
+
+    console.log(jsToBeExecutedOnPage)
     this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
   }
 
@@ -464,9 +466,8 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.updateLink, {url, title});
   }
 
-  insertImage(attributes) {
-    this._sendAction(actions.insertImage, attributes);
-    this.prepareInsert(); //This must be called BEFORE insertImage. But WebViewBridge uses a stack :/
+  insertImage(url) {
+    this._sendAction(actions.insertImage, url);
   }
 
   setSubscript() {

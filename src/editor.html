@@ -917,7 +917,7 @@
 				whenPastingInsertAsPlainText('zss_editor_title');
 				whenPastingInsertAsPlainText('zss_editor_content');
 
-				// zss_editor.focusTitle();
+				zss_editor.focusContent();
 
 				setTimeout(function() {
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'ZSS_INITIALIZED'}))
@@ -1059,17 +1059,21 @@
 
 			zss_editor.backuprange = function(){
 				var selection = window.getSelection();
-				var range = selection.getRangeAt(0);
-				zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+				try {
+					var range = selection.getRangeAt(0);
+					zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+				} catch (err) {}
 			}
 
 			zss_editor.restorerange = function(){
-				// var selection = window.getSelection();
-				// selection.removeAllRanges();
-				// var range = document.createRange();
-				// range.setStart(zss_editor.currentSelection.startContainer, zss_editor.currentSelection.startOffset);
-				// range.setEnd(zss_editor.currentSelection.endContainer, zss_editor.currentSelection.endOffset);
-				// selection.addRange(range);
+				try {
+					var selection = window.getSelection();
+					selection.removeAllRanges();
+					var range = document.createRange();
+					range.setStart(zss_editor.currentSelection.startContainer, zss_editor.currentSelection.startOffset);
+					range.setEnd(zss_editor.currentSelection.endContainer, zss_editor.currentSelection.endOffset);
+					selection.addRange(range);
+				} catch (err) {}
 			}
 
 			zss_editor.getSelectedNode = function() {
@@ -1216,7 +1220,6 @@
 			}
 
 			zss_editor.setFontFamily = function(fontFamily) {
-
 				zss_editor.restorerange();
 				document.execCommand("styleWithCSS", null, true);
 				document.execCommand("fontName", false, fontFamily);
@@ -1344,7 +1347,7 @@
 			}
 
 			zss_editor.prepareInsert = function() {
-				// zss_editor.backuprange();
+				zss_editor.backuprange();
 			}
 
 			zss_editor.insertImage = function(url) {
@@ -1535,7 +1538,7 @@
 					//Fonts
 					var font = t.css('font-family');
 					if (font.length != 0 && font != 'Arial, Helvetica, sans-serif') {
-						items.push('fonts');
+						items.push('fonts'); 
 					}
 
 					// Blockquote
