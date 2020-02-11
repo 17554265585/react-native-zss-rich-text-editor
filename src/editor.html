@@ -885,7 +885,6 @@
 				clearHtmlIfTextIsEmpty('zss_editor_content');
 
 				$(document).on('selectionchange',function(e){
-					console.log('selectionchange');
 					zss_editor.calculateEditorHeightWithCaretPosition();
 					zss_editor.setScrollPosition();
 					zss_editor.enabledEditingItems(e);
@@ -1684,7 +1683,7 @@
 			#zss_editor_content {
 				font-family: Arial, Helvetica, sans-serif;
 				color: #000;
-				width: 100%;
+				width: 95%;
 				height: 100%;
 				-webkit-overflow-scrolling: touch;
 				overflow:auto;
