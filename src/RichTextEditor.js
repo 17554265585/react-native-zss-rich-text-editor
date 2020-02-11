@@ -146,7 +146,7 @@ export default class RichTextEditor extends Component {
           this.setTitleHTML(this.props.initialTitleHTML || '');
           this.setContentHTML(this.props.initialContentHTML || '');
 
-          this.props.hiddenTitle && this.hideTitle();
+          !this.props.hiddenTitle && this.showTitle();
           this.props.enableOnChange && this.enableOnChange();
 
           this.props.editorInitializedCallback && this.props.editorInitializedCallback();
