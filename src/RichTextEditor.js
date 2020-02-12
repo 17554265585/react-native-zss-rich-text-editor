@@ -446,6 +446,10 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.insertImage, url);
   }
 
+  insertEmoji(url) {
+    this._sendAction(actions.insertEmoji, url);
+  }
+
   setSubscript() {
     this._sendAction(actions.setSubscript);
   }
