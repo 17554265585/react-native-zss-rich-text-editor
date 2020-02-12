@@ -145,7 +145,6 @@ export default class RichTextEditor extends Component {
           this.setContentPlaceholder(this.props.contentPlaceholder);
           this.setTitleHTML(this.props.initialTitleHTML || '');
           this.setContentHTML(this.props.initialContentHTML || '');
-
           !this.props.hiddenTitle && this.showTitle();
           this.props.enableOnChange && this.enableOnChange();
 
@@ -167,6 +166,9 @@ export default class RichTextEditor extends Component {
           break;
         case messages.CONTENT_FOCUSED:
           this.contentFocusHandler && this.contentFocusHandler();
+          break;
+        case messages.CONTENT_BLUR:
+          this.contentBlurHandler && this.contentBlurHandler();
           break;
         case messages.SELECTION_CHANGE: {
           const items = message.data.items;
@@ -586,6 +588,11 @@ export default class RichTextEditor extends Component {
   setContentFocusHandler(callbackHandler) {
     this.contentFocusHandler = callbackHandler;
     this._sendAction(actions.setContentFocusHandler);
+  }
+
+  setContentBlurHandler(callbackHandler) {
+    this.contentBlurHandler = callbackHandler;
+    this._sendAction(actions.setContentBlurHandler);
   }
 
   addSelectedTextChangeListener(listener) {

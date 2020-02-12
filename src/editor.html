@@ -916,7 +916,7 @@
 				whenPastingInsertAsPlainText('zss_editor_title');
 				whenPastingInsertAsPlainText('zss_editor_content');
 
-				zss_editor.focusContent();
+				// zss_editor.focusContent();
 
 				setTimeout(function() {
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'ZSS_INITIALIZED'}))
@@ -1355,6 +1355,7 @@
 			zss_editor.insertEmoji = function(url) {
 				zss_editor.restorerange();
 				document.execCommand('insertHTML', false, '<img class="emoji" src="' + encodeHtmlEntities(url) + '"/>');
+				zss_editor.blurContentEditor()
 				zss_editor.enabledEditingItems();
 			}
 
@@ -1626,6 +1627,11 @@
 				editor.focus(callbackHandler);
 			}
 
+			function addBlurEvent(editorId, callbackHandler) {
+				var editor = $('#' + editorId);
+				editor.blur(callbackHandler);
+			}
+
 			zss_editor.setTitleFocusHandler = function() {
 				addFocusEvent('zss_editor_title', function() {
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'TITLE_FOCUSED'}))
@@ -1635,6 +1641,12 @@
 			zss_editor.setContentFocusHandler = function() {
 				addFocusEvent('zss_editor_content', function() {
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'CONTENT_FOCUSED'}))
+				});
+			}
+
+			zss_editor.setContentBlurHandler = function() {
+				addBlurEvent('zss_editor_content', function() {
+					ReactNativeWebView.postMessage(JSON.stringify({type: 'CONTENT_BLUR'}))
 				});
 			}
 
@@ -1695,6 +1707,7 @@
 				padding-left: 10px;
 				padding-right: 10px;
 				line-height: 20px;
+				caret-color:rgb(90, 149, 211)
 			}
 
 			#zss_editor_title {
