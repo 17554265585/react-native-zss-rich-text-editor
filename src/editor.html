@@ -919,6 +919,7 @@
 				// zss_editor.focusContent();
 
 				setTimeout(function() {
+					zss_editor.setContentFocusHandler()
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'ZSS_INITIALIZED'}))
 				}, 20);
 
@@ -1061,6 +1062,9 @@
 				try {
 					var range = selection.getRangeAt(0);
 					zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+					if (range.endOffset === range.startOffset) {
+						zss_editor.insertHTML('<div class="caret_placeholder">&nbsp;&nbsp;</div>');
+					}
 				} catch (err) {}
 			}
 
@@ -1072,7 +1076,7 @@
 					range.setStart(zss_editor.currentSelection.startContainer, zss_editor.currentSelection.startOffset);
 					range.setEnd(zss_editor.currentSelection.endContainer, zss_editor.currentSelection.endOffset);
 					selection.addRange(range);
-				} catch (err) {}
+				} catch (err) { }
 			}
 
 			zss_editor.getSelectedNode = function() {
@@ -1355,7 +1359,9 @@
 			zss_editor.insertEmoji = function(url) {
 				zss_editor.restorerange();
 				document.execCommand('insertHTML', false, '<img class="emoji" src="' + encodeHtmlEntities(url) + '"/>');
-				zss_editor.blurContentEditor()
+				zss_editor.backuprange();
+				zss_editor.blurContentEditor();
+				
 				zss_editor.enabledEditingItems();
 			}
 
@@ -1640,6 +1646,7 @@
 
 			zss_editor.setContentFocusHandler = function() {
 				addFocusEvent('zss_editor_content', function() {
+					$('.caret_placeholder').remove();
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'CONTENT_FOCUSED'}))
 				});
 			}
@@ -1657,11 +1664,30 @@
 			zss_editor.setPlatform = function(platform) {
 				zss_editor.platform = platform;
 			}
-
 			//end
 		</script>
 
 		<style type="text/css">
+			@keyframes fade {
+				from {
+					opacity: 1.0;
+				}
+				15% {
+					opacity: 1.0;
+				}
+				40% {
+					opacity: 0;
+				}
+				60% {
+					opacity: 0;
+				}
+				85% {
+					opacity: 1.0;
+				}
+				to {
+					opacity: 1.0;
+				}
+			}
 			/* Default ZSSRichTextEditor Styling */
 			* {
 				outline: 0px solid transparent;
@@ -1749,6 +1775,15 @@
 				line-height: 19.5px;
 				display: inline-block;
 				vertical-align: top;
+			}
+
+			.caret_placeholder {
+				display: inline-block;
+				height: 19px;
+				width: 2px;
+				background-color: rgb(90, 149, 211);
+				overflow: hidden;
+				animation: fade 1.2s infinite;
 			}
 		</style>
 
