@@ -147,7 +147,7 @@ export default class RichTextEditor extends Component {
           this.setContentHTML(this.props.initialContentHTML || '');
           !this.props.hiddenTitle && this.showTitle();
           this.props.enableOnChange && this.enableOnChange();
-
+          
           this.props.editorInitializedCallback && this.props.editorInitializedCallback();
 
           break;
@@ -169,6 +169,9 @@ export default class RichTextEditor extends Component {
           break;
         case messages.CONTENT_BLUR:
           this.contentBlurHandler && this.contentBlurHandler();
+          break;
+        case messages.ONCHANGE_EMPTY_OR_NOT:
+          this.onChangeEmptyOrNot && this.onChangeEmptyOrNot();
           break;
         case messages.SELECTION_CHANGE: {
           const items = message.data.items;
@@ -310,7 +313,8 @@ export default class RichTextEditor extends Component {
   //-------------------------------------------------------------------------------
   //--------------- Public API
 
-  showLinkDialog(optionalTitle = '', optionalUrl = '') {
+  showLinkDialog(optionalTitle = '', optionalUrl = '', notCheckedUrlCallback) {
+    this.notCheckedUrlCallback = notCheckedUrlCallback || this.notCheckedUrlCallback;
     this.prepareInsert();
     this.setState({
       linkInitialUrl: optionalUrl,
@@ -437,11 +441,19 @@ export default class RichTextEditor extends Component {
   }
 
   insertLink(url, title) {
-    this._sendAction(actions.insertLink, {url, title});
+    if (/^(http:\/\/|https:\/\/)/.test(url)) {
+      this._sendAction(actions.insertLink, {url, title});
+    } else {
+      this.notCheckedUrlCallback && this.notCheckedUrlCallback()
+    }
   }
 
   updateLink(url, title) {
-    this._sendAction(actions.updateLink, {url, title});
+    if (/^(http:\/\/|https:\/\/)/.test(url)) {
+      this._sendAction(actions.updateLink, {url, title});
+    } else {
+      this.notCheckedUrlCallback && this.notCheckedUrlCallback()
+    }
   }
 
   insertImage(url) {
@@ -452,6 +464,10 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.insertEmoji, url);
   }
 
+  deleteEmoji(url) {
+    this._sendAction(actions.deleteEmoji, url);
+  }
+  
   setSubscript() {
     this._sendAction(actions.setSubscript);
   }
@@ -496,8 +512,8 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.setCustomCSS, css);
   }
 
-  prepareInsert() {
-    this._sendAction(actions.prepareInsert);
+  prepareInsert(showCaretPlaceholder) {
+    this._sendAction(actions.prepareInsert, showCaretPlaceholder);
   }
 
   restoreSelection() {
@@ -593,6 +609,11 @@ export default class RichTextEditor extends Component {
   setContentBlurHandler(callbackHandler) {
     this.contentBlurHandler = callbackHandler;
     this._sendAction(actions.setContentBlurHandler);
+  }
+
+  setOnChangeEmptyOrNot(callbackHandler) {
+    this.onChangeEmptyOrNot = callbackHandler;
+    this._sendAction(actions.setOnChangeEmptyOrNot);
   }
 
   addSelectedTextChangeListener(listener) {

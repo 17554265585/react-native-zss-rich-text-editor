@@ -1057,12 +1057,12 @@
 				}
 			}
 
-			zss_editor.backuprange = function(){
+			zss_editor.backuprange = function(showCaretPlaceholder){
 				var selection = window.getSelection();
 				try {
 					var range = selection.getRangeAt(0);
 					zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
-					if (range.endOffset === range.startOffset) {
+					if (range.endOffset === range.startOffset && showCaretPlaceholder === true) {
 						zss_editor.insertHTML('<div class="caret_placeholder">&nbsp;&nbsp;</div>');
 					}
 				} catch (err) {}
@@ -1260,8 +1260,9 @@
 			zss_editor.insertLink = function(url, title) {
 				zss_editor.restorerange();
 				var sel = window.getSelection();
-				sel.deleteFromDocument();
+				// sel.deleteFromDocument();
 				zss_editor.insertHTML('<a href="'+ url +'">'+ title +'</a>');
+				zss_editor.focusContent();
 				zss_editor.enabledEditingItems();
 			}
 
@@ -1344,8 +1345,8 @@
 
 			}
 
-			zss_editor.prepareInsert = function() {
-				zss_editor.backuprange();
+			zss_editor.prepareInsert = function(showCaretPlaceholder) {
+				zss_editor.backuprange(showCaretPlaceholder);
 			}
 
 			zss_editor.insertImage = function(url) {
@@ -1359,9 +1360,17 @@
 			zss_editor.insertEmoji = function(url) {
 				zss_editor.restorerange();
 				document.execCommand('insertHTML', false, '<img class="emoji" src="' + encodeHtmlEntities(url) + '"/>');
-				zss_editor.backuprange();
+				zss_editor.backuprange(true);
 				zss_editor.blurContentEditor();
-				
+				zss_editor.enabledEditingItems();
+
+			}
+
+			zss_editor.deleteEmoji = function(url) {
+				zss_editor.restorerange();
+				document.execCommand('Delete', false, null);
+				zss_editor.backuprange(true);
+				zss_editor.blurContentEditor();
 				zss_editor.enabledEditingItems();
 			}
 
@@ -1406,6 +1415,7 @@
 			}
 
 			zss_editor.setContentHTML = function(html) {
+				contentIsEmpty = html.length === 0; 
 				setHTML('zss_editor_content', html);
 			}
 
@@ -1590,7 +1600,6 @@
 			}
 
 			zss_editor.focusEditor = function(editorId) {
-
 				// the following was taken from http://stackoverflow.com/questions/1125292/how-to-move-cursor-to-end-of-contenteditable-entity/3866442#3866442
 				// and ensures we move the cursor to the end of the editor
 				var editor = $('#' + editorId);
@@ -1613,19 +1622,7 @@
 			}
 
 			zss_editor.setCustomCSS = function(customCSS) {
-
 				document.getElementsByTagName('style')[1].innerHTML=customCSS;
-
-				//set focus
-				/*editor.focusout(function(){
-				 var element = $(this);
-				 if (!element.text().trim().length) {
-				 element.empty();
-				 }
-				 });*/
-
-
-
 			}
 
 			function addFocusEvent(editorId, callbackHandler) {
@@ -1654,6 +1651,17 @@
 			zss_editor.setContentBlurHandler = function() {
 				addBlurEvent('zss_editor_content', function() {
 					ReactNativeWebView.postMessage(JSON.stringify({type: 'CONTENT_BLUR'}))
+				});
+			}
+
+			var contentIsEmpty = true;
+			zss_editor.setOnChangeEmptyOrNot = function() {
+				$('#zss_editor_content').on('input', function() {
+					if (!this.textContent && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
+						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: true}))
+					} else if (contentIsEmpty && (this.textContent || this.querySelectorAll('img, li').length > 0)) {
+						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: false}))
+					}
 				});
 			}
 

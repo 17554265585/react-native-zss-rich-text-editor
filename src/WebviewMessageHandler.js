@@ -59,11 +59,13 @@ export const MessageConverter = (action) => {
     case `${actions.insertLink}`:
       return `zss_editor.insertLink('${action.data.url}', '${action.data.title}');`;
     case `${actions.updateLink}`:
-      return `zss_editor.updateLink('${action.data.url}, ${action.data.title}');`;
+      return `zss_editor.updateLink('${action.data.url}', '${action.data.title}');`;
     case `${actions.insertImage}`:
       return `zss_editor.insertImage('${action.data}');`;
     case `${actions.insertEmoji}`:
         return `zss_editor.insertEmoji('${action.data}');`;
+    case `${actions.deleteEmoji}`:
+        return `zss_editor.deleteEmoji();`;
     case `${actions.setSubscript}`:
       return `zss_editor.setSubscript();`;
     case `${actions.setSuperscript}`:
@@ -85,7 +87,7 @@ export const MessageConverter = (action) => {
     case `${actions.focusTitle}`:
       return `zss_editor.focusTitle();`;
     case `${actions.prepareInsert}`:
-      return `zss_editor.prepareInsert();`;
+      return `zss_editor.prepareInsert(${action.data});`;
     case `${actions.restoreSelection}`:
       return `zss_editor.restorerange();`;
     case `${actions.setCustomCSS}`:
@@ -106,6 +108,8 @@ export const MessageConverter = (action) => {
       return `zss_editor.setContentFocusHandler();`;
     case `${actions.setContentBlurHandler}`:
         return `zss_editor.setContentBlurHandler();`;
+    case `${actions.setOnChangeEmptyOrNot}`:
+        return `zss_editor.setOnChangeEmptyOrNot();`;
     case `${actions.getTitleHtml}`:
       return `var html = zss_editor.getTitleHTML();
       ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.TITLE_HTML_RESPONSE}', data: html}));`
