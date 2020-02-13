@@ -964,7 +964,6 @@
 			}
 
 			zss_editor.updateOffset = function() {
-
 				if (!zss_editor.updateScrollOffset)
 					return;
 
@@ -1048,8 +1047,8 @@
 				var futureEditorHeight = caretYPosition + lineHeight;
 				if (caretYPosition < offsetY) {
 					newPos = caretYPosition;
-				} else if (futureEditorHeight > editorHeight + offsetY) {
-					newPos = futureEditorHeight - editorHeight + halfLineHeight;
+				} else if (futureEditorHeight > parseInt(editorHeight) + offsetY) {
+					newPos = futureEditorHeight - parseInt(editorHeight) + halfLineHeight;
 				}
 
 				if (newPos) {
