@@ -172,7 +172,7 @@ export default class RichTextEditor extends Component {
           this.contentBlurHandler && this.contentBlurHandler();
           break;
         case messages.ONCHANGE_EMPTY_OR_NOT:
-          this.onChangeEmptyOrNot && this.onChangeEmptyOrNot();
+          this.onChangeEmptyOrNot && this.onChangeEmptyOrNot(message.isEmpty);
           break;
         case messages.SELECTION_CHANGE: {
           const items = message.data.items;
@@ -307,7 +307,9 @@ export default class RichTextEditor extends Component {
 
   _sendAction(action, data) {
     let jsToBeExecutedOnPage = MessageConverter({ type: action, data });
-    console.log(jsToBeExecutedOnPage + ';true;')
+    if (__DEV__) {
+      console.log(jsToBeExecutedOnPage + ';true;')
+    }
     this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
   }
 

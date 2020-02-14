@@ -1062,7 +1062,7 @@
 					var range = selection.getRangeAt(0);
 					zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
 					if (range.endOffset === range.startOffset && showCaretPlaceholder === true) {
-						zss_editor.insertHTML('<div class="caret_placeholder">&nbsp;&nbsp;</div>');
+						zss_editor.insertHTML('<div class="caret_placeholder">&nbsp;</div>');
 					}
 				} catch (err) {}
 			}
@@ -1480,8 +1480,6 @@
 			}
 
 			zss_editor.enabledEditingItems = function(e) {
-
-				console.log('enabledEditingItems');
 				var items = [];
 				if (zss_editor.isCommandEnabled('bold')) {
 					items.push('bold');
@@ -1656,9 +1654,12 @@
 			var contentIsEmpty = true;
 			zss_editor.setOnChangeEmptyOrNot = function() {
 				$('#zss_editor_content').on('input', function() {
-					if (!this.textContent && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
+					const textContentLength = this.textContent.length - document.querySelectorAll(".caret_placeholder").length;
+					if (textContentLength === 0 && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
+						contentIsEmpty = true;
 						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: true}))
-					} else if (contentIsEmpty && (this.textContent || this.querySelectorAll('img, li').length > 0)) {
+					} else if (contentIsEmpty && (textContentLength > 0 || this.querySelectorAll('img, li').length > 0)) {
+						contentIsEmpty = false;
 						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: false}))
 					}
 				});
