@@ -1658,7 +1658,6 @@
 			var contentIsEmpty = true;
 			zss_editor.setOnChangeEmptyOrNot = function() {
 				$('#zss_editor_content').on('input', function() {
-					this.textContent = this.textContent || ''
 					var textContentLength = this.textContent.trim().length - document.querySelectorAll(".caret_placeholder").length;
 					if (textContentLength < 1 && document.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
 						contentIsEmpty = true;
