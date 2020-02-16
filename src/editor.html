@@ -1414,8 +1414,9 @@
 			}
 
 			zss_editor.setContentHTML = function(html) {
-				contentIsEmpty = html.length === 0; 
+				contentIsEmpty = html.trim().length === 0; 
 				setHTML('zss_editor_content', html);
+				ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: contentIsEmpty}))
 			}
 
 			zss_editor.insertHTML = function(html) {
@@ -1657,11 +1658,12 @@
 			var contentIsEmpty = true;
 			zss_editor.setOnChangeEmptyOrNot = function() {
 				$('#zss_editor_content').on('input', function() {
-					const textContentLength = this.textContent.trim().length - document.querySelectorAll(".caret_placeholder").length;
-					if (textContentLength < 1 && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
+					this.textContent = this.textContent || ''
+					var textContentLength = this.textContent.trim().length - document.querySelectorAll(".caret_placeholder").length;
+					if (textContentLength < 1 && document.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
 						contentIsEmpty = true;
 						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: true}))
-					} else if (contentIsEmpty && (textContentLength > 0 || this.querySelectorAll('img, li').length > 0)) {
+					} else if (contentIsEmpty && (textContentLength > 0 || document.querySelectorAll('img, li').length > 0)) {
 						contentIsEmpty = false;
 						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: false}))
 					}
