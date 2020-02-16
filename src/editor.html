@@ -1453,6 +1453,9 @@
 					});
 				}
 
+				// Caret
+				$(".caret_placeholder").remove();
+
 				// Get the contents
 				var h = document.getElementById(editorId).innerHTML;
 
@@ -1654,8 +1657,8 @@
 			var contentIsEmpty = true;
 			zss_editor.setOnChangeEmptyOrNot = function() {
 				$('#zss_editor_content').on('input', function() {
-					const textContentLength = this.textContent.length - document.querySelectorAll(".caret_placeholder").length;
-					if (textContentLength === 0 && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
+					const textContentLength = this.textContent.trim().length - document.querySelectorAll(".caret_placeholder").length;
+					if (textContentLength < 1 && this.querySelectorAll('img, li').length === 0 && !contentIsEmpty) {
 						contentIsEmpty = true;
 						ReactNativeWebView.postMessage(JSON.stringify({type: 'ONCHANGE_EMPTY_OR_NOT', isEmpty: true}))
 					} else if (contentIsEmpty && (textContentLength > 0 || this.querySelectorAll('img, li').length > 0)) {
