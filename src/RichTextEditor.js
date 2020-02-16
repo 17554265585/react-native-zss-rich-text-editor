@@ -148,7 +148,7 @@ export default class RichTextEditor extends Component {
           this.setContentHTML(this.props.initialContentHTML || '');
           !this.props.hiddenTitle && this.showTitle();
           this.props.enableOnChange && this.enableOnChange();
-          
+
           this.props.editorInitializedCallback && this.props.editorInitializedCallback();
 
           break;
@@ -221,15 +221,15 @@ export default class RichTextEditor extends Component {
               <Text style={[styles.inputTitle ,{marginTop: 10}]}>{linkOption.urlText}</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => this.setState({linkUrl: text})}
-                    value={this.state.linkUrl}
-                    keyboardType="url"
-                    autoCapitalize="none"
-                    autoCorrect={false}
+                  style={styles.input}
+                  onChangeText={(text) => this.setState({linkUrl: text})}
+                  value={this.state.linkUrl}
+                  keyboardType="url"
+                  autoCapitalize="none"
+                  autoCorrect={false}
                 />
               </View>
-              {PlatformIOS && <View style={styles.lineSeparator}/>}
+              <View style={styles.lineSeparator}/>
               {this._renderModalButtons()}
             </View>
           </View>
@@ -248,12 +248,11 @@ export default class RichTextEditor extends Component {
 
   _renderModalButtons() {
     const insertUpdateDisabled = this.state.linkTitle.trim().length <= 0 || this.state.linkUrl.trim().length <= 0;
-    const containerPlatformStyle = PlatformIOS ? {justifyContent: 'space-between'} : {paddingTop: 15};
-    const buttonPlatformStyle = PlatformIOS ? {flex: 1, height: 45, justifyContent: 'center'} : {};
+    const containerPlatformStyle = {justifyContent: 'space-between'};
+    const buttonPlatformStyle = {flex: 1, height: 45, justifyContent: 'center'};
     const { linkOption } = this.props;
     return (
-      <View style={[{alignSelf: 'stretch', flexDirection: 'row'}, containerPlatformStyle]}>
-        {!PlatformIOS && <View style={{flex: 1}}/>}
+      <View style={{alignSelf: 'stretch', flexDirection: 'row', justifyContent: 'space-between'}}>
         <TouchableOpacity
             onPress={() => this._hideModal()}
             style={buttonPlatformStyle}
@@ -467,7 +466,7 @@ export default class RichTextEditor extends Component {
   deleteEmoji(url) {
     this._sendAction(actions.deleteEmoji, url);
   }
-  
+
   setSubscript() {
     this._sendAction(actions.setSubscript);
   }
@@ -614,7 +613,7 @@ export default class RichTextEditor extends Component {
   setOnChangeEmptyOrNot(callbackHandler) {
     this.onChangeEmptyOrNot = callbackHandler;
     this._sendAction(actions.setOnChangeEmptyOrNot);
-  }
+  } 
 
   addSelectedTextChangeListener(listener) {
     this._selectedTextChangeListeners.push(listener);
@@ -631,12 +630,12 @@ const styles = StyleSheet.create({
   innerModal: {
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingTop: 20,
-    paddingBottom: PlatformIOS ? 0 : 20,
+    paddingBottom: 0,
     paddingLeft: 20,
     paddingRight: 20,
     alignSelf: 'stretch',
     margin: 40,
-    borderRadius: PlatformIOS ? 8 : 2
+    borderRadius: 8
   },
   button: {
     fontSize: 16,
@@ -647,20 +646,24 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     borderBottomColor: '#4a4a4a',
-    borderBottomWidth: PlatformIOS ? 1 / PixelRatio.get() : 0
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    justifyContent :'flex-end',
+    height: 30,
+    paddingBottom: 1,
   },
   inputTitle: {
     color: '#4a4a4a'
   },
   input: {
-    height: PlatformIOS ? 20 : 40,
-    paddingTop: 0
+    padding: 0,
+    margin: 0,
+    includeFontPadding:false,
   },
   lineSeparator: {
     height: 1 / PixelRatio.get(),
     backgroundColor: '#d5d5d5',
     marginLeft: -20,
     marginRight: -20,
-    marginTop: 20
+    marginTop: 15
   }
 });
