@@ -247,7 +247,7 @@ export default class RichTextEditor extends Component {
   }
 
   _renderModalButtons() {
-    const insertUpdateDisabled = this.state.linkTitle.trim().length <= 0 || this.state.linkUrl.trim().length <= 0;
+    const insertUpdateDisabled = this.state.linkUrl.trim().length <= 0;
     const containerPlatformStyle = {justifyContent: 'space-between'};
     const buttonPlatformStyle = {flex: 1, height: 45, justifyContent: 'center'};
     const { linkOption } = this.props;
@@ -440,19 +440,21 @@ export default class RichTextEditor extends Component {
   }
 
   insertLink(url, title) {
-    if (/^(http:\/\/|https:\/\/)/.test(url)) {
-      this._sendAction(actions.insertLink, {url, title});
-    } else {
-      this.notCheckedUrlCallback && this.notCheckedUrlCallback()
-    }
+    this._sendAction(actions.insertLink, {url, title: title || url});
+    // if (/^(http:\/\/|https:\/\/)/.test(url)) {
+    //   this._sendAction(actions.insertLink, {url, title: title || url});
+    // } else {
+    //   this.notCheckedUrlCallback && this.notCheckedUrlCallback()
+    // }
   }
 
   updateLink(url, title) {
-    if (/^(http:\/\/|https:\/\/)/.test(url)) {
-      this._sendAction(actions.updateLink, {url, title});
-    } else {
-      this.notCheckedUrlCallback && this.notCheckedUrlCallback()
-    }
+    this._sendAction(actions.updateLink, {url, title: title || url});
+    // if (/^(http:\/\/|https:\/\/)/.test(url)) {
+    //   this._sendAction(actions.updateLink, {url, title: title || url});
+    // } else {
+    //   this.notCheckedUrlCallback && this.notCheckedUrlCallback()
+    // }
   }
 
   insertImage(url) {
