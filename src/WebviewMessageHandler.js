@@ -63,7 +63,7 @@ export const MessageConverter = (action) => {
     case `${actions.insertImage}`:
       return `zss_editor.insertImage('${action.data}');`;
     case `${actions.insertEmoji}`:
-        return `zss_editor.insertEmoji('${action.data}');`;
+        return `zss_editor.insertEmoji('${action.data.url}', '${action.data.tag}');`;
     case `${actions.deleteEmoji}`:
         return `zss_editor.deleteEmoji();`;
     case `${actions.setSubscript}`:

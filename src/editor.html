@@ -1357,9 +1357,9 @@
 				zss_editor.enabledEditingItems();
 			}
 
-			zss_editor.insertEmoji = function(url) {
+			zss_editor.insertEmoji = function(url, tag) {
 				zss_editor.restorerange();
-				document.execCommand('insertHTML', false, '<img class="emoji" src="' + encodeHtmlEntities(url) + '"/>');
+				document.execCommand('insertHTML', false, '<img tag="' + tag + '" class="emoji" src="' + encodeHtmlEntities(url) + '"/>');
 				zss_editor.backuprange(true);
 				zss_editor.blurContentEditor();
 				zss_editor.enabledEditingItems();

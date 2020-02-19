@@ -462,8 +462,8 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.insertImage, url);
   }
 
-  insertEmoji(url) {
-    this._sendAction(actions.insertEmoji, url);
+  insertEmoji(url, tag) {
+    this._sendAction(actions.insertEmoji, { tag, url });
   }
 
   deleteEmoji(url) {
